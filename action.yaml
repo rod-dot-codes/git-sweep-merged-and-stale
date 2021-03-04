@@ -13,7 +13,7 @@ inputs:
   delete_stale_after_days:
     description: 'After how many days should a branch be stale?'
     required: true
-    default: 365
+    default: '365'
   action:
     description: 'Type of action? ("preview" (dry-run) or "cleanup")'
     required: true
@@ -32,13 +32,9 @@ runs:
     - id: ensure-python36-and-above
       run: ${{ github.action_path }}/bin/ensure_python
       shell: bash
-    - id: install-pip-package
+    - id: install-run-git-sweep-merged-and-stale
       run:
-        cd ${{ github.action_path }} && pip install -e .
-      shell: bash
-    - id: run-git-sweep-merged-and-stale
-      run:
-        git-sweep-merged-and-stale ${{ inputs.action }} --master ${{ inputs.which_master_main }} --skip ${{ inputs.skip }} --delete_stale_after_days ${{ inputs.delete_stale_after_days }}
+        cd ${{ github.action_path }} && sudo pip install --user && cd ${{ github.github.workspace }} && git-sweep-merged-and-stale ${{ inputs.action }} --master ${{ inputs.which_master_main }} --skip ${{ inputs.skip }} --delete_stale_after_days ${{ inputs.delete_stale_after_days }}
       shell: bash
 branding:
   icon: 'archive'
