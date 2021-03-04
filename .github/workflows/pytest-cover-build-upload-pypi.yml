@@ -41,17 +41,26 @@ jobs:
       run: PATH="$PATH:/home/runner/.local/bin" pytest -vvv --cache-clear --cov=src/gitsweep/ --cov-config=.coveragerc src/gitsweep/tests > pytest-coverage.txt
     - name: Comment coverage
       uses: coroo/pytest-coverage-commentator@v1.0.2
-  build_latest_tag:
-    if: github.event.master_branch
+  run_data:
     needs: [pytest_coverage_tool]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Tell me about what's going on
+        env:
+          OWNER: ${{ github.owner }}
+          REF: ${{ github.ref }}
+        run: echo $OWNER && echo $REF
+  build_latest_tag:
+    if: contains(github.ref, "master") && github.owner == "rodvdka"
+    needs: [run_data]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
       - name: Run latest-tag
         uses: EndBug/latest-tag@latest
   test_stale:
-    if: github.event.master_branch
-    needs: [pytest_coverage_tool, build_latest_tag]
+    if: contains(github.ref, "master")
+    needs: [build_latest_tag]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
