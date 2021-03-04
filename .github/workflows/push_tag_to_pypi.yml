@@ -1,5 +1,14 @@
 name: Push tag to PyPi
 on: 
+  workflow_run:
+    workflows: ["Pytest and tag latest and beta"]
+    types:
+      - completed
+    inputs:
+      tag:
+        description: 'Tag to Push'
+        default: '1.0b1'
+        required: true
   workflow_dispatch:
     inputs:
       tag:
@@ -36,4 +45,3 @@ jobs:
         build: true
         pip: true
         password: ${{ secrets.SECRET_PYPI_RODCODES_API_TOKEN }}
-        check: github.event.inputs.tag != "latest"
