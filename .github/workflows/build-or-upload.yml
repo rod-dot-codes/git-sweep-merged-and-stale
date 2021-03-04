@@ -1,6 +1,13 @@
 name: Build on any tag update or push
 on:
-  push
+  create:
+    tags:
+  pull_request:
+    branches:
+      - 'master'
+  push:
+    branches:
+      - 'master'
 
 jobs:
   build_or_upload_if_tag_to_pypi:
@@ -29,4 +36,4 @@ jobs:
         build: true
         pip: true
         password: ${{ secrets.SECRET_PYPI_RODCODES_API_TOKEN }}
-        upload: ${{ github.event_name == 'push' && startsWith(github.event.ref, 'refs/tags') }}
+        upload: ${{ github.event_name == 'create' && github.event.ref_type == "tag" }}
