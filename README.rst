@@ -15,12 +15,17 @@ The following branches are not deleted by default:
 
 ::
 
-    WARNING: When you delete branches with no active PR, you will lose access to the ability to restore the branch. Please back it up using Github Artifacts or
+    WARNING: When you delete branches with no active PR, 
+    you will lose access to the ability to restore the branch.
+    Please back it up using Github Artifacts or
     a copy of the branch prior to running this.
 
+Read the Python `Readme`_ .
+`PyPi`_ version available for PIP.
 
-`PyPi`_ version available for PIP. Based off `git-sweep`_ .
-Read the Python `_Readme`.
+Based off `git-sweep`_ .
+
+MIT License.
 
 .. _PyPi: https://pypi.org/project/git-sweep-merged-and-stale/
 .. _Readme: https://github.com/rodvdka/git-sweep-merged-and-stale/blob/master/PACKAGE_README.rst
