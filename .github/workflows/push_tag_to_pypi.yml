@@ -21,9 +21,14 @@ jobs:
     steps:
     - name: Git install
       run: sudo apt-get install git
+    - name: Print Context
+      env:
+        INPUT: ${{ github.event.inputs.tag }}
+        TAG: ${{ format('{0}{1}', github.event.inputs.tag, 'refs/tags/1.0b1') }}
+      run: echo $TAG & echo $INPUT
     - uses: actions/checkout@v2
       with:
-        ref: format('{0}{1}', github.event.inputs.tag, 'refs/tags/1.0b1')
+        ref: ${{ format('{0}{1}', github.event.inputs.tag, 'refs/tags/1.0b1') }}
     - name: Set up Python
       uses: actions/setup-python@v2
       with:
