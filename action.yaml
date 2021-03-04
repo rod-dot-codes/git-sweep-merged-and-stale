@@ -34,7 +34,7 @@ runs:
       shell: bash
     - id: install-run-git-sweep-merged-and-stale
       run:
-        sudo apt-get install git && cd ${{ github.action_path }} && pip install . --user && cd ${{ github.workspace }} && PATH="/home/runner/.local/bin" git-sweep-merged-and-stale ${{ inputs.action }} --master ${{ inputs.which_master_main }} --skip ${{ inputs.skip }} --delete_stale_after_days ${{ inputs.delete_stale_after_days }}
+        sudo apt-get install git && cd ${{ github.action_path }} && pip install . --user && cd ${{ github.workspace }} && PATH="$PATH:/home/runner/.local/bin" git-sweep-merged-and-stale ${{ inputs.action }} --master ${{ inputs.which_master_main }} --skip ${{ inputs.skip }} --delete_stale_after_days ${{ inputs.delete_stale_after_days }}
       shell: bash
 branding:
   icon: 'archive'
