@@ -12,7 +12,7 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
-      - uses: rodvdka/git-sweep-merged-and-stale@v0.13-alpha
-      - uses: rodvdka/git-sweep-merged-and-stale@v0.13-alpha
+      - uses: rodvdka/git-sweep-merged-and-stale@v0.14-alpha
+      - uses: rodvdka/git-sweep-merged-and-stale@v0.14-alpha
         with:
           action: "cleanup"
