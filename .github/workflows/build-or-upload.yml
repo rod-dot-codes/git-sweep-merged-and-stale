@@ -36,4 +36,4 @@ jobs:
         build: true
         pip: true
         password: ${{ secrets.SECRET_PYPI_RODCODES_API_TOKEN }}
-        upload: ${{ github.event_name == 'create' && github.event.ref_type == "tag" }}
+        upload: ${{ github.event_name == 'create' && github.event.ref_type ==  'tag' }}
