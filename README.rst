@@ -1,7 +1,7 @@
 git-sweep-merged-and-stale
 ===========================
 
-This is based on the excellent `git-sweep https://github.com/arc90/git-sweep`_
+This is based on the excellent `git-sweep`_ .
 
 I just added ``delete_stale_after_days`` which allows you to specify ``delete_stale_after_days`` stale branches we need to delete.
 
@@ -212,3 +212,7 @@ License
 -------
 
 Friendly neighborhood MIT license.
+
+.. _GitHub Flow: http://scottchacon.com/2011/08/31/github-flow.html
+.. _git-flow: http://nvie.com/posts/a-successful-git-branching-model/
+.. _git-sweep: https://github.com/arc90/git-sweep
