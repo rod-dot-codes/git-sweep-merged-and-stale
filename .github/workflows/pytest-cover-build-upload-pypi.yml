@@ -1,8 +1,13 @@
-name: pytest-coverage-commentator
+name: Pytest versions and on push = test build, and on tag = upload build
 on:
   pull_request:
     branches: 
       - '*'
+  push:
+    tags:
+      - '*'
+
+
 jobs:
   pytest_coverage_tool:
     runs-on: ${{ matrix.os }}
