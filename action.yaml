@@ -3,6 +3,10 @@ author: Rodney Hawkins (rod.codes)
 description: "Delete merged and stale branches from a Github repository.
 Use at your own risk.
 
+This deletes branches that fulfil either of these:
+  - Merged into Master or Main (specified by `which_master_main`) OR
+  - Branches older than X days (specified by `delete_stale_after_days`)
+
 WARNING: When you delete branches with no active PR, you will lose access to the ability to restore the branch. Please back it up using Github Artifacts or
 a copy of the branch prior to running this."
 inputs:
@@ -18,14 +22,24 @@ inputs:
     description: 'Comma seperated string list of branches to ignore'
     required: false
     default: "main"
-  master:
-    description: 'The name of what you consider the master branch'
+  which_master_main:
+    description: 'The name of what you consider the main or master branch'
     required: false
     default: "master"
 runs:
-  using: python
-  pre: 'pip install -e .'
-  main: 'git-sweep-merged-and-stale ${{ inputs.action }} --master ${{ inputs.master }} --skip ${{ inputs.skip }} --delete_stale_after_days ${{ inputs.delete_stale_after_days }}'
+  using: composite
+  steps:
+    - id: ensure-python36-and-above
+      run: ${{ github.action_path }}/bin/ensure_python
+      shell: bash
+    - id: install-pip-package
+      run:
+        cd ${{ github.action_path }} && pip install -e .
+      shell: bash
+    - id: run-isort
+      run:
+        git-sweep-merged-and-stale ${{ inputs.action }} --master ${{ input.which_master_main }} --skip ${{ inputs.skip }} --delete_stale_after_days ${{ inputs.delete_stale_after_days }}
+      shell: bash
 branding:
   icon: 'archive'
   color: 'white'
