@@ -4,7 +4,7 @@ from setuptools import setup, find_packages
 
 here = os.path.abspath(os.path.dirname(__file__))
 README = open(os.path.join(here, 'README.rst')).read()
-ACTION_README = open(os.path.join(here, 'ACTION_README.rst')).read()
+PACKAGE_README = open(os.path.join(here, 'PACKAGE_README.rst')).read()
 
 install_requires = [
     'GitPython>=3.1',
@@ -12,11 +12,10 @@ install_requires = [
 
 tag = "{tag}"
 forced_tag = f"{os.environ.get('FORCED_TAG', '')}"
-is_latest_tag = forced_tag == "latest" or tag == "latest"
 
 setup(name='git-sweep-merged-and-stale',
     description="Clean up branches from your Git remotes",
-    long_description=ACTION_README if is_latest_tag else README,
+    long_description=PACKAGE_README,
     classifiers=[
         'Development Status :: 4 - Beta',
         'Environment :: Console',
