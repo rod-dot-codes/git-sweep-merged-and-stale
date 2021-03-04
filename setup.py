@@ -12,7 +12,7 @@ install_requires = [
 ]
 
 setup(name='git-sweep-merged-and-stale',
-    version=version,
+    version_config=True,
     description="Clean up branches from your Git remotes",
     long_description=README,
     classifiers=[
@@ -37,6 +37,7 @@ setup(name='git-sweep-merged-and-stale',
     include_package_data=True,
     zip_safe=False,
     install_requires=install_requires,
+    setup_requires=['setuptools-git-versioning'],
     entry_points={
         'console_scripts':
             ['git-sweep-merged-and-stale=gitsweep.entrypoints:main']
