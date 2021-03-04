@@ -297,9 +297,9 @@ class TestHelpMenu(CommandTestCase):
         Will cleanup immediately if forced.
         """
         valid_deletes = [101, 300, 31, 900]
-        invalid_deletes = [29, 30, 14, 0, 1, -100]
-        valid_dates = [datetime.now() - timedelta(days=i) for i in valid_deletes]
-        invalid_dates = [datetime.now() - timedelta(days=i) for i in invalid_deletes]
+        invalid_deletes = [29, 14, 0, 1, -100]
+        valid_dates = [datetime.utcnow() - timedelta(days=i) for i in valid_deletes]
+        invalid_dates = [datetime.utcnow() - timedelta(days=i) for i in invalid_deletes]
         all_deletes = valid_deletes + invalid_deletes
         all_dates = valid_dates + invalid_dates
         for i, date in zip(all_deletes, all_dates):
@@ -361,9 +361,9 @@ class TestHelpMenu(CommandTestCase):
         Will cleanup immediately if forced.
         """
         valid_deletes = [101, 300, 31, 900]
-        invalid_deletes = [29, 30, 14, 0, 1, -100]
-        valid_dates = [datetime.now() - timedelta(days=i) for i in valid_deletes]
-        invalid_dates = [datetime.now() - timedelta(days=i) for i in invalid_deletes]
+        invalid_deletes = [29, 14, 0, 1, -100]
+        valid_dates = [datetime.utcnow() - timedelta(days=i) for i in valid_deletes]
+        invalid_dates = [datetime.utcnow() - timedelta(days=i) for i in invalid_deletes]
         all_deletes = valid_deletes + invalid_deletes
         all_dates = valid_dates + invalid_dates
         for i, date in zip(all_deletes, all_dates):
