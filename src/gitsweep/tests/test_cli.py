@@ -381,7 +381,7 @@ class TestHelpMenu(CommandTestCase):
             self.command("git merge branch{0}".format(i))
 
         (retcode, stdout, stderr) = self.gscommand(
-            "git-sweep preview --delete_stale_after_days=30"
+            "git-sweep preview --delete_stale_after_days=30 --force"
         )
         date_replace = {}
         for i, d in enumerate(valid_dates):
@@ -402,7 +402,7 @@ class TestHelpMenu(CommandTestCase):
               branch-stale-31 is stale (2021-02-01)
               branch-stale-900 is stale (2018-09-16)
 
-            To delete them, run again with `git-sweep cleanup --delete_stale_after_days=30`
+            To delete them, run again with `git-sweep cleanup --delete_stale_after_days=30 --force`
             """
         ).substitute(date_replace)
         print(comparision)

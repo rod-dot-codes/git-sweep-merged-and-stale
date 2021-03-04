@@ -73,6 +73,13 @@ class CommandLine(object):
         usage=_preview_usage,
     )
     _preview.add_argument("--origin", **_origin_kwargs)
+    _preview.add_argument(
+        "--force",
+        action="store_true",
+        default=False,
+        dest="force",
+        help="This does nothing for the preview command.",
+    )
     _preview.add_argument("--master", **_master_kwargs)
     _preview.add_argument("--nofetch", **_no_fetch_kwargs)
     _preview.add_argument("--skip", **_skip_kwargs)
