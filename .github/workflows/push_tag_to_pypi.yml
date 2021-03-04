@@ -4,11 +4,6 @@ on:
     workflows: ["Pytest and tag latest and beta"]
     types:
       - completed
-    inputs:
-      tag:
-        description: 'Tag to Push'
-        default: '1.0b1'
-        required: true
   workflow_dispatch:
     inputs:
       tag:
@@ -40,7 +35,7 @@ jobs:
         pip install twine wheel
     - uses: casperdcl/deploy-pypi@v2
       env:
-        FORCED_TAG: ${{ github.event.inputs.tag }}
+        FORCED_TAG: ${{ github.event.inputs.tag }} || '1.0b1'
       with:
         build: true
         pip: true
