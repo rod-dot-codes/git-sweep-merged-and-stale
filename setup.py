@@ -43,6 +43,6 @@ setup(name='git-sweep-merged-and-stale',
             ['git-sweep-merged-and-stale=gitsweep.entrypoints:main']
     },
     version_config={
-        "template": forced_tag if forced_tag else tag
+        "starting_version": forced_tag if forced_tag else tag
     },
 )
