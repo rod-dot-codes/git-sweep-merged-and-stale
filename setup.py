@@ -9,6 +9,9 @@ install_requires = [
     'GitPython>=3.1',
 ]
 
+tag = "{tag}"
+forced_tag = f"{os.environ.get('FORCED_TAG', '')}"
+
 setup(name='git-sweep-merged-and-stale',
     version_config=True,
     description="Clean up branches from your Git remotes",
@@ -39,5 +42,8 @@ setup(name='git-sweep-merged-and-stale',
     entry_points={
         'console_scripts':
             ['git-sweep-merged-and-stale=gitsweep.entrypoints:main']
-    }
+    },
+    version_config={
+        "template": forced_tag if forced_tag else tag
+    },
 )
