@@ -33,8 +33,7 @@ def cwd_bounce(dir):
     Context manager will yield the original working directory and make that
     available to the context manager's assignment target.
     """
-    
-    
+
     original_dir = getcwd()
     try:
         chdir(dir)
@@ -50,6 +49,7 @@ class GitSweepTestCase(TestCase):
     Sets up a Git repository and provides some command to manipulate it.
 
     """
+
     def setUp(self):
         """
         Sets up the Git repository for testing.
@@ -67,6 +67,7 @@ class GitSweepTestCase(TestCase):
         freezer = freeze_time("2001-01-01T00:00:00")
         freezer.start()
         from datetime import datetime
+
         super(GitSweepTestCase, self).setUp()
 
         repodir = mkdtemp()
@@ -74,10 +75,10 @@ class GitSweepTestCase(TestCase):
         self.repodir = repodir
         self.repo = Repo.init(repodir)
 
-        rootcommit_filename = join(repodir, 'rootcommit')
+        rootcommit_filename = join(repodir, "rootcommit")
 
-        with open(rootcommit_filename, 'w') as fh:
-            fh.write('')
+        with open(rootcommit_filename, "w") as fh:
+            fh.write("")
 
         self.repo.index.add([basename(rootcommit_filename)])
         str_date = str(datetime.utcnow())
@@ -86,7 +87,7 @@ class GitSweepTestCase(TestCase):
             author_date=str_date,
             committer=Actor("Paul", "paul@rod.codes"),
             commit_date=str_date,
-            message="Root commit"
+            message="Root commit",
         )
 
         # Cache the remote per test
@@ -95,7 +96,7 @@ class GitSweepTestCase(TestCase):
         # Keep track of cloned repositories that track self.repo
         self._clone_dirs = []
         freezer.stop()
-        
+
     def tearDown(self):
         """
         Remove any created repositories.
@@ -147,8 +148,9 @@ class GitSweepTestCase(TestCase):
 
         This is used for testing and debugging only.
         """
-        sys.stdout.write(Git(self.repodir).execute(
-            ['git', 'log', '--graph', '--oneline']))
+        sys.stdout.write(
+            Git(self.repodir).execute(["git", "log", "--graph", "--oneline"])
+        )
 
     def make_commit(self, freezer=None):
         """
@@ -156,9 +158,10 @@ class GitSweepTestCase(TestCase):
         """
         freezer.start() if freezer else None
         from datetime import datetime
+
         fragment = uuid().hex[:8]
         filename = join(self.repodir, fragment)
-        with open(filename, 'w') as fh:
+        with open(filename, "w") as fh:
             fh.write(uuid().hex)
 
         self.repo.index.add([basename(filename)])
@@ -168,15 +171,16 @@ class GitSweepTestCase(TestCase):
             str_date = str_date.replace(" ", "T")
         if not freezer:
             str_date, _ = str(datetime.utcnow().isoformat()).split(".")
-        msg = 'Adding {0}'.format(basename(filename))
+        msg = "Adding {0}".format(basename(filename))
         self.repo.index.commit(
             author=Actor("Peter", "peter@rod.codes"),
-             author_date=str_date,
-             committer=Actor("Paul", "paul@rod.codes"),
-             commit_date=str_date,
-             message=msg
+            author_date=str_date,
+            committer=Actor("Paul", "paul@rod.codes"),
+            commit_date=str_date,
+            message=msg,
         )
         freezer.stop() if freezer else None
+
 
 class InspectorTestCase(TestCase):
 
@@ -184,6 +188,7 @@ class InspectorTestCase(TestCase):
     Creates an Inspector object for testing.
 
     """
+
     def setUp(self):
         super(InspectorTestCase, self).setUp()
 
@@ -223,6 +228,7 @@ class DeleterTestCase(TestCase):
     Creates a Deleter object for testing.
 
     """
+
     def setUp(self):
         super(DeleterTestCase, self).setUp()
 
@@ -245,6 +251,7 @@ class CommandTestCase(GitSweepTestCase, InspectorTestCase, DeleterTestCase):
     Used to test the command-line interface.
 
     """
+
     def setUp(self):
         super(CommandTestCase, self).setUp()
 
@@ -278,11 +285,8 @@ class CommandTestCase(GitSweepTestCase, InspectorTestCase, DeleterTestCase):
 
         self.cli.args = args[1:]
 
-        patches = (
-            patch.object(sys, 'stdout'),
-            patch.object(sys, 'stderr')
-        )
-        
+        patches = (patch.object(sys, "stdout"), patch.object(sys, "stderr"))
+
         with ExitStack() as stack:
             [stack.enter_context(cm) for cm in patches]
             stdout = sys.stdout
@@ -292,8 +296,7 @@ class CommandTestCase(GitSweepTestCase, InspectorTestCase, DeleterTestCase):
             except SystemExit as se:
                 pass
 
-            stdout = ''.join([i[0][0] for i in stdout.write.call_args_list])
-            stderr = ''.join([i[0][0] for i in stderr.write.call_args_list])
+            stdout = "".join([i[0][0] for i in stdout.write.call_args_list])
+            stderr = "".join([i[0][0] for i in stderr.write.call_args_list])
 
             return (None, stdout, stderr)
-            

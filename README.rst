@@ -1,5 +1,17 @@
-git-sweep
+git-sweep-merged-and-stale
 =========
+
+This is based on the excellent ``git-sweep``.
+
+I just added ``delete_stale_after_days`` which allows you to specify ``delete_stale_after_days`` stale branches we need to delete.
+
+ie: ``git-sweep cleanup --delete_stale_after_days 15`` will delete all Branches older than 15 days and those merged in Master.
+
+WARNING: When you delete branches with no active PR, you will lose access to the ability to restore the branch. Please back it up using Github Artifacts or
+a copy of the branch prior to running this.
+
+Introduction
+-----------
 
 A command-line tool that helps you clean up Git branches that have been merged
 into master.
@@ -164,27 +176,7 @@ You can also clean up local branches by using simple hack:
 Development
 -----------
 
-git-sweep uses `git-flow`_ for development and release cylces. If you want to
-hack on this with us, fork the project and put a pull request into the
-``develop`` branch when you get done.
-
-To run the tests, bootstrap Buildout and run this command:
-
-::
-
-    $ git clone http://github.com/arc90/git-sweep.git
-    $ cd git-sweep
-    $ python2.7 bootstrap.py
-    ...
-    $ ./bin/buildout
-    ...
-    $ ./bin/test
-
-We also use Tox_. It will run the tests for Python 2.6 and 2.7.
-
-::
-
-    $ ./bin/tox
+I just use ``pytest`` to test this.
 
 Requirements
 ------------
@@ -196,7 +188,3 @@ License
 -------
 
 Friendly neighborhood MIT license.
-
-.. _GitHub Flow: http://scottchacon.com/2011/08/31/github-flow.html
-.. _git-flow: http://nvie.com/posts/a-successful-git-branching-model/
-.. _Tox: http://pypi.python.org/pypi/tox

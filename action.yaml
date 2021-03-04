@@ -1,0 +1,31 @@
+name: Delete Merged & Old Stale Branches
+author: Rodney Hawkins (rod.codes)
+description: "Delete merged and stale branches from a Github repository.
+Use at your own risk.
+
+WARNING: When you delete branches with no active PR, you will lose access to the ability to restore the branch. Please back it up using Github Artifacts or
+a copy of the branch prior to running this."
+inputs:
+  delete_stale_after_days:
+    description: 'After how many days should a branch be stale?'
+    required: true
+    default: 365
+  action:
+    description: 'Type of action? ("preview" (dry-run) or "cleanup")'
+    required: true
+    default: 'preview'
+  skip:
+    description: 'Comma seperated string list of branches to ignore'
+    required: false
+    default: "main"
+  master:
+    description: 'The name of what you consider the master branch'
+    required: false
+    default: "master"
+runs:
+  using: python
+  pre: 'pip install -e .'
+  main: 'git-sweep-merged-and-stale ${{ inputs.action }} --master ${{ inputs.master }} --skip ${{ inputs.skip }} --delete_stale_after_days ${{ inputs.delete_stale_after_days }}'
+branding:
+  icon: 'archive'
+  color: 'white'

@@ -14,13 +14,15 @@ class TestHelpMenu(CommandTestCase):
     Command-line tool can show the help menu.
 
     """
+
     def test_help(self):
         """
         If no arguments are given the help menu is displayed.
         """
-        (retcode, stdout, stderr) = self.gscommand('git-sweep -h')
+        (retcode, stdout, stderr) = self.gscommand("git-sweep -h")
 
-        self.assertResults('''
+        self.assertResults(
+            """
             usage: git-sweep <action> [-h]
 
             Clean up your Git remote branches.
@@ -34,44 +36,52 @@ class TestHelpMenu(CommandTestCase):
               {preview,cleanup}
                 preview          Preview the branches that will be deleted
                 cleanup          Delete merged branches from the remote
-            ''', stdout)
+            """,
+            stdout,
+        )
 
     def test_fetch(self):
         """
         Will fetch if told not to.
         """
-        (retcode, stdout, stderr) = self.gscommand('git-sweep preview')
+        (retcode, stdout, stderr) = self.gscommand("git-sweep preview")
 
-        self.assertResults('''
+        self.assertResults(
+            """
             Fetching from the remote
             No remote branches are available for cleaning up
-            ''', stdout)
+            """,
+            stdout,
+        )
 
     def test_no_fetch(self):
         """
         Will not fetch if told not to.
         """
-        (retcode, stdout, stderr) = self.gscommand(
-            'git-sweep preview --nofetch')
+        (retcode, stdout, stderr) = self.gscommand("git-sweep preview --nofetch")
 
-        self.assertResults('''
+        self.assertResults(
+            """
             No remote branches are available for cleaning up
-            ''', stdout)
+            """,
+            stdout,
+        )
 
     def test_will_preview(self):
         """
         Will preview the proposed deletes.
         """
         for i in range(1, 6):
-            self.command('git checkout -b branch{0}'.format(i))
+            self.command("git checkout -b branch{0}".format(i))
             self.make_commit()
-            self.command('git checkout master')
+            self.command("git checkout master")
             self.make_commit()
-            self.command('git merge branch{0}'.format(i))
+            self.command("git merge branch{0}".format(i))
 
-        (retcode, stdout, stderr) = self.gscommand('git-sweep preview')
+        (retcode, stdout, stderr) = self.gscommand("git-sweep preview")
 
-        self.assertResults('''
+        self.assertResults(
+            """
             Fetching from the remote
             These branches have been merged into master:
 
@@ -82,25 +92,28 @@ class TestHelpMenu(CommandTestCase):
               branch5
 
             To delete them, run again with `git-sweep cleanup`
-            ''', stdout)
+            """,
+            stdout,
+        )
 
     def test_will_preserve_arguments(self):
         """
         The recommended cleanup command contains the same arguments given.
         """
         for i in range(1, 6):
-            self.command('git checkout -b branch{0}'.format(i))
+            self.command("git checkout -b branch{0}".format(i))
             self.make_commit()
-            self.command('git checkout master')
+            self.command("git checkout master")
             self.make_commit()
-            self.command('git merge branch{0}'.format(i))
+            self.command("git merge branch{0}".format(i))
 
-        preview = 'git-sweep preview --master=master --origin=origin'
-        cleanup = 'git-sweep cleanup --master=master --origin=origin'
+        preview = "git-sweep preview --master=master --origin=origin"
+        cleanup = "git-sweep cleanup --master=master --origin=origin"
 
         (retcode, stdout, stderr) = self.gscommand(preview)
 
-        self.assertResults('''
+        self.assertResults(
+            """
             Fetching from the remote
             These branches have been merged into master:
 
@@ -111,39 +124,47 @@ class TestHelpMenu(CommandTestCase):
               branch5
 
             To delete them, run again with `{0}`
-            '''.format(cleanup), stdout)
+            """.format(
+                cleanup
+            ),
+            stdout,
+        )
 
     def test_will_preview_none_found(self):
         """
         Will preview the proposed deletes.
         """
         for i in range(1, 6):
-            self.command('git checkout -b branch{0}'.format(i))
+            self.command("git checkout -b branch{0}".format(i))
             self.make_commit()
-            self.command('git checkout master')
+            self.command("git checkout master")
 
-        (retcode, stdout, stderr) = self.gscommand('git-sweep preview')
-        self.assertResults('''
+        (retcode, stdout, stderr) = self.gscommand("git-sweep preview")
+        self.assertResults(
+            """
             Fetching from the remote
             No remote branches are available for cleaning up
-            ''', stdout)
+            """,
+            stdout,
+        )
 
     def test_will_cleanup(self):
         """
         Will preview the proposed deletes.
         """
         for i in range(1, 6):
-            self.command('git checkout -b branch{0}'.format(i))
+            self.command("git checkout -b branch{0}".format(i))
             self.make_commit()
-            self.command('git checkout master')
+            self.command("git checkout master")
             self.make_commit()
-            self.command('git merge branch{0}'.format(i))
+            self.command("git merge branch{0}".format(i))
 
-        with patch('gitsweep.cli.raw_input', create=True) as ri:
-            ri.return_value = 'y'
-            (retcode, stdout, stderr) = self.gscommand('git-sweep cleanup')
+        with patch("gitsweep.cli.raw_input", create=True) as ri:
+            ri.return_value = "y"
+            (retcode, stdout, stderr) = self.gscommand("git-sweep cleanup")
 
-        self.assertResults('''
+        self.assertResults(
+            """
             Fetching from the remote
             These branches have been merged into master:
 
@@ -164,24 +185,27 @@ class TestHelpMenu(CommandTestCase):
 
             Tell everyone to run `git fetch --prune` to sync with this remote.
             (you don't have to, yours is synced)
-            ''', stdout)
+            """,
+            stdout,
+        )
 
     def test_will_abort_cleanup(self):
         """
         Will preview the proposed deletes.
         """
         for i in range(1, 6):
-            self.command('git checkout -b branch{0}'.format(i))
+            self.command("git checkout -b branch{0}".format(i))
             self.make_commit()
-            self.command('git checkout master')
+            self.command("git checkout master")
             self.make_commit()
-            self.command('git merge branch{0}'.format(i))
+            self.command("git merge branch{0}".format(i))
 
-        with patch('gitsweep.cli.raw_input', create=True) as ri:
-            ri.return_value = 'n'
-            (retcode, stdout, stderr) = self.gscommand('git-sweep cleanup')
+        with patch("gitsweep.cli.raw_input", create=True) as ri:
+            ri.return_value = "n"
+            (retcode, stdout, stderr) = self.gscommand("git-sweep cleanup")
 
-        self.assertResults('''
+        self.assertResults(
+            """
             Fetching from the remote
             These branches have been merged into master:
 
@@ -193,25 +217,29 @@ class TestHelpMenu(CommandTestCase):
 
             Delete these branches? (y/n) 
             OK, aborting.
-            ''', stdout)
+            """,
+            stdout,
+        )
 
     def test_will_skip_certain_branches(self):
         """
         Can be forced to skip certain branches.
         """
         for i in range(1, 6):
-            self.command('git checkout -b branch{0}'.format(i))
+            self.command("git checkout -b branch{0}".format(i))
             self.make_commit()
-            self.command('git checkout master')
+            self.command("git checkout master")
             self.make_commit()
-            self.command('git merge branch{0}'.format(i))
+            self.command("git merge branch{0}".format(i))
 
         (retcode, stdout, stderr) = self.gscommand(
-            'git-sweep preview --skip=branch1,branch2')
+            "git-sweep preview --skip=branch1,branch2"
+        )
 
-        cleanup = 'git-sweep cleanup --skip=branch1,branch2'
+        cleanup = "git-sweep cleanup --skip=branch1,branch2"
 
-        self.assertResults('''
+        self.assertResults(
+            """
             Fetching from the remote
             These branches have been merged into master:
 
@@ -220,22 +248,27 @@ class TestHelpMenu(CommandTestCase):
               branch5
 
             To delete them, run again with `{0}`
-            '''.format(cleanup), stdout)
+            """.format(
+                cleanup
+            ),
+            stdout,
+        )
 
     def test_will_force_clean(self):
         """
         Will cleanup immediately if forced.
         """
         for i in range(1, 6):
-            self.command('git checkout -b branch{0}'.format(i))
+            self.command("git checkout -b branch{0}".format(i))
             self.make_commit()
-            self.command('git checkout master')
+            self.command("git checkout master")
             self.make_commit()
-            self.command('git merge branch{0}'.format(i))
+            self.command("git merge branch{0}".format(i))
 
-        (retcode, stdout, stderr) = self.gscommand('git-sweep cleanup --force')
+        (retcode, stdout, stderr) = self.gscommand("git-sweep cleanup --force")
 
-        self.assertResults('''
+        self.assertResults(
+            """
             Fetching from the remote
             These branches have been merged into master:
 
@@ -255,7 +288,9 @@ class TestHelpMenu(CommandTestCase):
 
             Tell everyone to run `git fetch --prune` to sync with this remote.
             (you don't have to, yours is synced)
-            ''', stdout)
+            """,
+            stdout,
+        )
 
     def test_will_force_clean_mixed_with_dates(self):
         """
@@ -268,26 +303,28 @@ class TestHelpMenu(CommandTestCase):
         all_deletes = valid_deletes + invalid_deletes
         all_dates = valid_dates + invalid_dates
         for i, date in zip(all_deletes, all_dates):
-            self.command('git checkout master')
+            self.command("git checkout master")
             time_in_past = freeze_time(date.strftime("%Y-%m-%dT%H:%M"))
-            self.command('git checkout -b branch-stale-{0}'.format(i))
+            self.command("git checkout -b branch-stale-{0}".format(i))
             self.make_commit(time_in_past)
-            self.command('git checkout master')
+            self.command("git checkout master")
 
         for i in range(1, 6):
-            self.command('git checkout -b branch{0}'.format(i))
+            self.command("git checkout -b branch{0}".format(i))
             self.make_commit()
-            self.command('git checkout master')
+            self.command("git checkout master")
             self.make_commit()
-            self.command('git merge branch{0}'.format(i))
+            self.command("git merge branch{0}".format(i))
 
-
-        (retcode, stdout, stderr) = self.gscommand('git-sweep cleanup --force --delete_stale_after_days=30')
+        (retcode, stdout, stderr) = self.gscommand(
+            "git-sweep cleanup --force --delete_stale_after_days 30"
+        )
         date_replace = {}
         for i, d in enumerate(valid_dates):
             date_replace["date%s" % i] = d.strftime("%Y-%m-%d")
-        
-        comparision = Template("""
+
+        comparision = Template(
+            """
             Fetching from the remote
             These branches have been merged into master:
 
@@ -315,7 +352,8 @@ class TestHelpMenu(CommandTestCase):
 
             Tell everyone to run `git fetch --prune` to sync with this remote.
             (you don't have to, yours is synced)
-            """).substitute(date_replace)
+            """
+        ).substitute(date_replace)
         self.assertResults(comparision, stdout)
 
     def test_preview_clean_mixed(self):
@@ -329,26 +367,28 @@ class TestHelpMenu(CommandTestCase):
         all_deletes = valid_deletes + invalid_deletes
         all_dates = valid_dates + invalid_dates
         for i, date in zip(all_deletes, all_dates):
-            self.command('git checkout master')
+            self.command("git checkout master")
             time_in_past = freeze_time(date.strftime("%Y-%m-%dT%H:%M"))
-            self.command('git checkout -b branch-stale-{0}'.format(i))
+            self.command("git checkout -b branch-stale-{0}".format(i))
             self.make_commit(time_in_past)
-            self.command('git checkout master')
+            self.command("git checkout master")
 
         for i in range(1, 6):
-            self.command('git checkout -b branch{0}'.format(i))
+            self.command("git checkout -b branch{0}".format(i))
             self.make_commit()
-            self.command('git checkout master')
+            self.command("git checkout master")
             self.make_commit()
-            self.command('git merge branch{0}'.format(i))
+            self.command("git merge branch{0}".format(i))
 
-
-        (retcode, stdout, stderr) = self.gscommand('git-sweep preview --delete_stale_after_days=30')
+        (retcode, stdout, stderr) = self.gscommand(
+            "git-sweep preview --delete_stale_after_days=30"
+        )
         date_replace = {}
         for i, d in enumerate(valid_dates):
             date_replace["date%s" % i] = d.strftime("%Y-%m-%d")
-        
-        comparision = Template("""
+
+        comparision = Template(
+            """
             Fetching from the remote
             These branches have been merged into master:
 
@@ -363,7 +403,8 @@ class TestHelpMenu(CommandTestCase):
               branch-stale-900 is stale (2018-09-16)
 
             To delete them, run again with `git-sweep cleanup --delete_stale_after_days=30`
-            """).substitute(date_replace)
+            """
+        ).substitute(date_replace)
         print(comparision)
         print(stdout)
         self.assertResults(comparision, stdout)

@@ -17,4 +17,4 @@ def test():
 
     import sys
 
-    nose.main(argv=['nose'] + sys.argv[1:])
+    nose.main(argv=["nose"] + sys.argv[1:])

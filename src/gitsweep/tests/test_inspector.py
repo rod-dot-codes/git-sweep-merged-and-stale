@@ -9,6 +9,7 @@ class TestInspector(GitSweepTestCase, InspectorTestCase):
     Inspector can find merged branches and present them for cleaning.
 
     """
+
     def test_no_branches(self):
         """
         If only the master branch is present, nothing to clean.
@@ -20,34 +21,34 @@ class TestInspector(GitSweepTestCase, InspectorTestCase):
         Will filter references and not return HEAD and master.
         """
         for i in range(1, 4):
-            self.command('git checkout -b branch{0}'.format(i))
-            self.command('git checkout master')
+            self.command("git checkout -b branch{0}".format(i))
+            self.command("git checkout master")
 
-        refs = self.inspector._filtered_remotes(
-            self.inspector.repo.remotes[0])
+        refs = self.inspector._filtered_remotes(self.inspector.repo.remotes[0])
 
-        self.assertEqual(['branch1', 'branch2', 'branch3'],
-            [i.remote_head for i in refs])
+        self.assertEqual(
+            ["branch1", "branch2", "branch3"], [i.remote_head for i in refs]
+        )
 
     def test_one_branch_no_commits(self):
         """
         There is one branch on the remote that is the same as master.
         """
-        self.command('git checkout -b branch1')
-        self.command('git checkout master')
+        self.command("git checkout -b branch1")
+        self.command("git checkout master")
 
         # Since this is the same as master, it should show up as merged
-        self.assertEqual(['branch1'], self.merged_refs())
+        self.assertEqual(["branch1"], self.merged_refs())
 
     def test_one_branch_one_commit(self):
         """
         A commit has been made in the branch so it's not safe to remove.
         """
-        self.command('git checkout -b branch1')
+        self.command("git checkout -b branch1")
 
         self.make_commit()
 
-        self.command('git checkout master')
+        self.command("git checkout master")
 
         # Since there is a commit in branch1, it's not safe to remove it
         self.assertEqual([], self.merged_refs())
@@ -56,33 +57,34 @@ class TestInspector(GitSweepTestCase, InspectorTestCase):
         """
         If a branch has been merged, it's safe to delete it.
         """
-        self.command('git checkout -b branch1')
+        self.command("git checkout -b branch1")
 
         self.make_commit()
 
-        self.command('git checkout master')
+        self.command("git checkout master")
 
-        self.command('git merge branch1')
+        self.command("git merge branch1")
 
-        self.assertEqual(['branch1'], self.merged_refs())
+        self.assertEqual(["branch1"], self.merged_refs())
 
     def test_find_stale_branches_than_30_days(self):
         """
         If a branch has been merged, it's safe to delete it.
         """
         freezer = freeze_time("2005-04-07T22:13:13")
-        self.command('git checkout -b branch_super_old')
+        self.command("git checkout -b branch_super_old")
         self.make_commit(freezer)
 
         freezer = freeze_time("2021-01-01T22:13:13")
-        self.command('git checkout -b branch_super_young')
+        self.command("git checkout -b branch_super_young")
         self.make_commit(freezer)
 
-        self.command('git checkout master')
+        self.command("git checkout master")
 
         freezer = freeze_time("2021-01-30T22:13:13")
         freezer.start()
         from datetime import datetime
+
         datetime_older_than = datetime.utcnow() - timedelta(days=90)
         refs = self.inspector.stale_branches(datetime_older_than)
         assert len(refs) == 1
@@ -98,17 +100,17 @@ class TestInspector(GitSweepTestCase, InspectorTestCase):
         """
         Commits in master not in the branch do not block it for deletion.
         """
-        self.command('git checkout -b branch1')
+        self.command("git checkout -b branch1")
 
         self.make_commit()
 
-        self.command('git checkout master')
+        self.command("git checkout master")
 
         self.make_commit()
 
-        self.command('git merge branch1')
+        self.command("git merge branch1")
 
-        self.assertEqual(['branch1'], self.merged_refs())
+        self.assertEqual(["branch1"], self.merged_refs())
 
     def test_large_set_of_changes(self):
         r"""
@@ -144,12 +146,12 @@ class TestInspector(GitSweepTestCase, InspectorTestCase):
             |/
         """
         for i in range(1, 6):
-            self.command('git checkout -b branch{0}'.format(i))
+            self.command("git checkout -b branch{0}".format(i))
             self.make_commit()
-            self.command('git checkout master')
+            self.command("git checkout master")
             self.make_commit()
-            self.command('git merge branch{0}'.format(i))
+            self.command("git merge branch{0}".format(i))
 
         self.assertEqual(
-            ['branch1', 'branch2', 'branch3', 'branch4', 'branch5'],
-            self.merged_refs())
+            ["branch1", "branch2", "branch3", "branch4", "branch5"], self.merged_refs()
+        )

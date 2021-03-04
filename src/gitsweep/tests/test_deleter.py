@@ -1,5 +1,8 @@
-from gitsweep.tests.testcases import (GitSweepTestCase, InspectorTestCase,
-    DeleterTestCase)
+from gitsweep.tests.testcases import (
+    GitSweepTestCase,
+    InspectorTestCase,
+    DeleterTestCase,
+)
 
 
 class TestDeleter(GitSweepTestCase, InspectorTestCase, DeleterTestCase):
@@ -8,15 +11,16 @@ class TestDeleter(GitSweepTestCase, InspectorTestCase, DeleterTestCase):
     Can delete remote refs from a remote.
 
     """
+
     def setUp(self):
         super(TestDeleter, self).setUp()
 
         for i in range(1, 6):
-            self.command('git checkout -b branch{0}'.format(i))
+            self.command("git checkout -b branch{0}".format(i))
             self.make_commit()
-            self.command('git checkout master')
+            self.command("git checkout master")
             self.make_commit()
-            self.command('git merge branch{0}'.format(i))
+            self.command("git merge branch{0}".format(i))
 
     def test_will_delete_merged_from_clone(self):
         """
@@ -34,8 +38,7 @@ class TestDeleter(GitSweepTestCase, InspectorTestCase, DeleterTestCase):
         self.assertEqual(7, len(before))
 
         # Delete from the remote through the clone
-        pushes = self.deleter.remove_remote_refs(
-            self.merged_refs(refobjs=True))
+        pushes = self.deleter.remove_remote_refs(self.merged_refs(refobjs=True))
 
         # Make sure it removed the expected number
         self.assertEqual(5, len(pushes))
@@ -45,7 +48,7 @@ class TestDeleter(GitSweepTestCase, InspectorTestCase, DeleterTestCase):
         after.sort()
 
         # We should be down to 2, HEAD and master
-        self.assertEqual(['HEAD', 'master'], after)
+        self.assertEqual(["HEAD", "master"], after)
 
     def test_will_delete_merged_on_remote(self):
         """
@@ -66,8 +69,7 @@ class TestDeleter(GitSweepTestCase, InspectorTestCase, DeleterTestCase):
         self.assertEqual(6, len(before))
 
         # Delete through the clone which pushes to this remote
-        pushes = self.deleter.remove_remote_refs(
-            self.merged_refs(refobjs=True))
+        pushes = self.deleter.remove_remote_refs(self.merged_refs(refobjs=True))
 
         # Make sure it removed the expected number
         self.assertEqual(5, len(pushes))
@@ -75,4 +77,4 @@ class TestDeleter(GitSweepTestCase, InspectorTestCase, DeleterTestCase):
         # Grab again
         after = [i.name for i in remote.refs]
         # Should be down to just master
-        self.assertEqual(['master'], after)
+        self.assertEqual(["master"], after)
