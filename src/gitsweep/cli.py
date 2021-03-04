@@ -55,6 +55,7 @@ class CommandLine(object):
     _preview_usage = dedent('''
         git-sweep preview [-h] [--nofetch] [--skip SKIPS]
                               [--master MASTER] [--origin ORIGIN]
+                              [--delete_stale_after_days DAYS_INT]
         '''.strip())
 
     _preview = _sub_parsers.add_parser('preview',
@@ -70,6 +71,7 @@ class CommandLine(object):
     _cleanup_usage = dedent('''
         git-sweep cleanup [-h] [--nofetch] [--skip SKIPS] [--force]
                               [--master MASTER] [--origin ORIGIN]
+                              [--delete_stale_after_days DAYS_INT]
         '''.strip())
 
     _cleanup = _sub_parsers.add_parser('cleanup',

@@ -46,6 +46,6 @@ setup(name='git-sweep-merged-and-stale',
     install_requires=install_requires,
     entry_points={
         'console_scripts':
-            ['git-sweep=gitsweep.entrypoints:main']
+            ['git-sweep-merged-and-stale=gitsweep.entrypoints:main']
     }
 )
