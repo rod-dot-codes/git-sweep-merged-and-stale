@@ -47,11 +47,11 @@ jobs:
     steps:
       - name: Tell me about what's going on
         env:
-          SENDER: ${{ github.sender }}
+          ACTOR: ${{ github.actor }}
           REF: ${{ github.ref }}
-        run: echo $SENDER && echo $REF
+        run: echo $ACTOR && echo $REF
   build_latest_tag:
-    if: github.ref == 'refs/heads/master' && github.sender == 'rodvdka'
+    if: github.ref == 'refs/heads/master' && github.actor == 'rodvdka'
     needs: [run_data]
     runs-on: ubuntu-latest
     steps:
