@@ -14,4 +14,4 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
-      - uses: rodvdka/git-sweep-merged-and-stale@v0.9-alpha
+      - uses: rodvdka/git-sweep-merged-and-stale@v0.10-alpha
