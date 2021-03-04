@@ -51,7 +51,7 @@ jobs:
           REF: ${{ github.ref }}
         run: echo $OWNER && echo $REF
   build_latest_tag:
-    if: contains(github.ref, "master") && github.owner == "rodvdka"
+    if: contains(github.ref, 'master') && github.owner == 'rodvdka'
     needs: [run_data]
     runs-on: ubuntu-latest
     steps:
