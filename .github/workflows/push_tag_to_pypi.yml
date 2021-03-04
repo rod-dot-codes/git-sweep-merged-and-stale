@@ -36,3 +36,4 @@ jobs:
         build: true
         pip: true
         password: ${{ secrets.SECRET_PYPI_RODCODES_API_TOKEN }}
+        check: github.event.inputs.tag != "latest"
