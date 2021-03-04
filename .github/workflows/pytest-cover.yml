@@ -37,7 +37,8 @@ jobs:
       run: PATH="$PATH:/home/runner/.local/bin" pytest -vvv --cache-clear --cov=src/gitsweep/ --cov-config=.coveragerc src/gitsweep/tests > pytest-coverage.txt
     - name: Comment coverage
       uses: coroo/pytest-coverage-commentator@v1.0.2
-  upload_to_pypi:
+  build_or_upload_if_tag_to_pypi:
+    needs: [pytest_coverage_tool]
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
