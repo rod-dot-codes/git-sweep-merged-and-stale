@@ -36,9 +36,9 @@ runs:
       run:
         cd ${{ github.action_path }} && pip install -e .
       shell: bash
-    - id: run-isort
+    - id: run-git-sweep-merged-and-stale
       run:
-        git-sweep-merged-and-stale ${{ inputs.action }} --master ${{ input.which_master_main }} --skip ${{ inputs.skip }} --delete_stale_after_days ${{ inputs.delete_stale_after_days }}
+        git-sweep-merged-and-stale ${{ inputs.action }} --master ${{ inputs.which_master_main }} --skip ${{ inputs.skip }} --delete_stale_after_days ${{ inputs.delete_stale_after_days }}
       shell: bash
 branding:
   icon: 'archive'
