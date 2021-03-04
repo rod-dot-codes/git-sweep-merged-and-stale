@@ -5,10 +5,8 @@ from setuptools import setup, find_packages
 here = os.path.abspath(os.path.dirname(__file__))
 README = open(os.path.join(here, 'README.rst')).read()
 
-version = '0.6'
-
 install_requires = [
-    'GitPython>=0.3.2RC1',
+    'GitPython>=3.1',
 ]
 
 setup(name='git-sweep-merged-and-stale',
