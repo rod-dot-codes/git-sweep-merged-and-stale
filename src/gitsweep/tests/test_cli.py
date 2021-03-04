@@ -1,5 +1,10 @@
 from mock import patch
 
+from string import Template
+
+from freezegun import freeze_time
+from datetime import timedelta, datetime
+
 from gitsweep.tests.testcases import CommandTestCase
 
 
@@ -118,7 +123,6 @@ class TestHelpMenu(CommandTestCase):
             self.command('git checkout master')
 
         (retcode, stdout, stderr) = self.gscommand('git-sweep preview')
-
         self.assertResults('''
             Fetching from the remote
             No remote branches are available for cleaning up
@@ -252,3 +256,114 @@ class TestHelpMenu(CommandTestCase):
             Tell everyone to run `git fetch --prune` to sync with this remote.
             (you don't have to, yours is synced)
             ''', stdout)
+
+    def test_will_force_clean_mixed_with_dates(self):
+        """
+        Will cleanup immediately if forced.
+        """
+        valid_deletes = [101, 300, 31, 900]
+        invalid_deletes = [29, 30, 14, 0, 1, -100]
+        valid_dates = [datetime.now() - timedelta(days=i) for i in valid_deletes]
+        invalid_dates = [datetime.now() - timedelta(days=i) for i in invalid_deletes]
+        all_deletes = valid_deletes + invalid_deletes
+        all_dates = valid_dates + invalid_dates
+        for i, date in zip(all_deletes, all_dates):
+            self.command('git checkout master')
+            time_in_past = freeze_time(date.strftime("%Y-%m-%dT%H:%M"))
+            self.command('git checkout -b branch-stale-{0}'.format(i))
+            self.make_commit(time_in_past)
+            self.command('git checkout master')
+
+        for i in range(1, 6):
+            self.command('git checkout -b branch{0}'.format(i))
+            self.make_commit()
+            self.command('git checkout master')
+            self.make_commit()
+            self.command('git merge branch{0}'.format(i))
+
+
+        (retcode, stdout, stderr) = self.gscommand('git-sweep cleanup --force --delete_stale_after_days=30')
+        date_replace = {}
+        for i, d in enumerate(valid_dates):
+            date_replace["date%s" % i] = d.strftime("%Y-%m-%d")
+        
+        comparision = Template("""
+            Fetching from the remote
+            These branches have been merged into master:
+
+              branch1
+              branch2
+              branch3
+              branch4
+              branch5
+              branch-stale-101 is stale ($date0)
+              branch-stale-300 is stale ($date1)
+              branch-stale-31 is stale ($date2)
+              branch-stale-900 is stale ($date3)
+
+              deleting branch1 (done)
+              deleting branch2 (done)
+              deleting branch3 (done)
+              deleting branch4 (done)
+              deleting branch5 (done)
+              deleting branch-stale-101 (done)
+              deleting branch-stale-300 (done)
+              deleting branch-stale-31 (done)
+              deleting branch-stale-900 (done)
+
+            All done!
+
+            Tell everyone to run `git fetch --prune` to sync with this remote.
+            (you don't have to, yours is synced)
+            """).substitute(date_replace)
+        self.assertResults(comparision, stdout)
+
+    def test_preview_clean_mixed(self):
+        """
+        Will cleanup immediately if forced.
+        """
+        valid_deletes = [101, 300, 31, 900]
+        invalid_deletes = [29, 30, 14, 0, 1, -100]
+        valid_dates = [datetime.now() - timedelta(days=i) for i in valid_deletes]
+        invalid_dates = [datetime.now() - timedelta(days=i) for i in invalid_deletes]
+        all_deletes = valid_deletes + invalid_deletes
+        all_dates = valid_dates + invalid_dates
+        for i, date in zip(all_deletes, all_dates):
+            self.command('git checkout master')
+            time_in_past = freeze_time(date.strftime("%Y-%m-%dT%H:%M"))
+            self.command('git checkout -b branch-stale-{0}'.format(i))
+            self.make_commit(time_in_past)
+            self.command('git checkout master')
+
+        for i in range(1, 6):
+            self.command('git checkout -b branch{0}'.format(i))
+            self.make_commit()
+            self.command('git checkout master')
+            self.make_commit()
+            self.command('git merge branch{0}'.format(i))
+
+
+        (retcode, stdout, stderr) = self.gscommand('git-sweep preview --delete_stale_after_days=30')
+        date_replace = {}
+        for i, d in enumerate(valid_dates):
+            date_replace["date%s" % i] = d.strftime("%Y-%m-%d")
+        
+        comparision = Template("""
+            Fetching from the remote
+            These branches have been merged into master:
+
+              branch1
+              branch2
+              branch3
+              branch4
+              branch5
+              branch-stale-101 is stale (2020-11-23)
+              branch-stale-300 is stale (2020-05-08)
+              branch-stale-31 is stale (2021-02-01)
+              branch-stale-900 is stale (2018-09-16)
+
+            To delete them, run again with `git-sweep cleanup --delete_stale_after_days=30`
+            """).substitute(date_replace)
+        print(comparision)
+        print(stdout)
+        self.assertResults(comparision, stdout)

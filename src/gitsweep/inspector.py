@@ -1,4 +1,6 @@
-from git import Git
+from git import Git, Repo
+
+from datetime import datetime
 
 from .base import BaseOperation
 
@@ -41,3 +43,36 @@ class Inspector(BaseOperation):
                 merged.append(ref)
 
         return merged
+
+
+    def stale_branches(self, datetime_older_than, skip=[]):
+        """
+        Returns a list of remote refs that are stale,
+        which is set to the timedelta.
+        """
+        origin = self._origin
+
+        self._master_ref(origin)
+        refs = self._filtered_remotes(
+            origin, skip=['HEAD', self.master_branch] + skip)
+
+        repo = Repo(self.repo.working_dir)
+
+        commits = {}
+
+        for ref in refs:
+            commits[ref] = []
+            for commit in list(repo.iter_commits(ref)):
+                date_committed = datetime.utcfromtimestamp(commit.committed_date)
+                if ref in commits:
+                    commits[ref] += [date_committed]
+
+        result = []
+        for key in commits.keys():
+            if commits[key]:
+                youngest_commit = max(commits[key])
+                if youngest_commit < datetime_older_than:
+                    diff = abs(youngest_commit - datetime_older_than).days
+                    result.append((key, youngest_commit, diff))
+
+        return result

@@ -1,3 +1,5 @@
+from freezegun import freeze_time
+from datetime import timedelta
 from gitsweep.tests.testcases import GitSweepTestCase, InspectorTestCase
 
 
@@ -63,6 +65,34 @@ class TestInspector(GitSweepTestCase, InspectorTestCase):
         self.command('git merge branch1')
 
         self.assertEqual(['branch1'], self.merged_refs())
+
+    def test_find_stale_branches_than_30_days(self):
+        """
+        If a branch has been merged, it's safe to delete it.
+        """
+        freezer = freeze_time("2005-04-07T22:13:13")
+        self.command('git checkout -b branch_super_old')
+        self.make_commit(freezer)
+
+        freezer = freeze_time("2021-01-01T22:13:13")
+        self.command('git checkout -b branch_super_young')
+        self.make_commit(freezer)
+
+        self.command('git checkout master')
+
+        freezer = freeze_time("2021-01-30T22:13:13")
+        freezer.start()
+        from datetime import datetime
+        datetime_older_than = datetime.utcnow() - timedelta(days=90)
+        refs = self.inspector.stale_branches(datetime_older_than)
+        assert len(refs) == 1
+        first_failure = refs[0]
+        print(first_failure)
+        self.assertEqual(first_failure[0].remote_head, "branch_super_old")
+        self.assertEqual(first_failure[1], datetime(2005, 4, 7, 22, 13, 13))
+        self.assertEqual(first_failure[2], 5687)
+
+        freezer.stop()
 
     def test_commit_in_master(self):
         """

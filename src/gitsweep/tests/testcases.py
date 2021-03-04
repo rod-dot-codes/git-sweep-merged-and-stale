@@ -6,8 +6,12 @@ from unittest import TestCase
 from uuid import uuid4 as uuid
 from shutil import rmtree
 from shlex import split
-from contextlib import contextmanager, nested
+from contextlib import ExitStack, contextmanager
 from textwrap import dedent
+
+from freezegun import freeze_time
+
+from git.util import Actor
 
 from mock import patch
 from git import Repo
@@ -29,8 +33,9 @@ def cwd_bounce(dir):
     Context manager will yield the original working directory and make that
     available to the context manager's assignment target.
     """
+    
+    
     original_dir = getcwd()
-
     try:
         chdir(dir)
 
@@ -59,6 +64,9 @@ class GitSweepTestCase(TestCase):
 
         This will create the root commit in the test repository automaticall.
         """
+        freezer = freeze_time("2001-01-01T00:00:00")
+        freezer.start()
+        from datetime import datetime
         super(GitSweepTestCase, self).setUp()
 
         repodir = mkdtemp()
@@ -72,14 +80,22 @@ class GitSweepTestCase(TestCase):
             fh.write('')
 
         self.repo.index.add([basename(rootcommit_filename)])
-        self.repo.index.commit('Root commit')
+        str_date = str(datetime.utcnow())
+        self.repo.index.commit(
+            author=Actor("Peter", "peter@rod.codes"),
+            author_date=str_date,
+            committer=Actor("Paul", "paul@rod.codes"),
+            commit_date=str_date,
+            message="Root commit"
+        )
 
         # Cache the remote per test
         self._remote = None
 
         # Keep track of cloned repositories that track self.repo
         self._clone_dirs = []
-
+        freezer.stop()
+        
     def tearDown(self):
         """
         Remove any created repositories.
@@ -99,12 +115,11 @@ class GitSweepTestCase(TestCase):
 
         self.assertEqual(expected, actual)
 
-    def command(self, command):
+    def command(self, command, freezer=None):
         """
         Runs the Git command in self.repo
         """
         args = split(command)
-
         cmd = Git(self.repodir)
 
         cmd.execute(args)
@@ -135,18 +150,33 @@ class GitSweepTestCase(TestCase):
         sys.stdout.write(Git(self.repodir).execute(
             ['git', 'log', '--graph', '--oneline']))
 
-    def make_commit(self):
+    def make_commit(self, freezer=None):
         """
         Makes a random commit in the current branch.
         """
+        freezer.start() if freezer else None
+        from datetime import datetime
         fragment = uuid().hex[:8]
         filename = join(self.repodir, fragment)
         with open(filename, 'w') as fh:
             fh.write(uuid().hex)
 
         self.repo.index.add([basename(filename)])
-        self.repo.index.commit('Adding {0}'.format(basename(filename)))
-
+        str_date = str(datetime.utcnow())
+        if "." in str_date:
+            str_date, _ = str_date.split(".")
+            str_date = str_date.replace(" ", "T")
+        if not freezer:
+            str_date, _ = str(datetime.utcnow().isoformat()).split(".")
+        msg = 'Adding {0}'.format(basename(filename))
+        self.repo.index.commit(
+            author=Actor("Peter", "peter@rod.codes"),
+             author_date=str_date,
+             committer=Actor("Paul", "paul@rod.codes"),
+             commit_date=str_date,
+             message=msg
+        )
+        freezer.stop() if freezer else None
 
 class InspectorTestCase(TestCase):
 
@@ -182,6 +212,9 @@ class InspectorTestCase(TestCase):
             return refs
 
         return [i.remote_head for i in refs]
+
+    def stale_branches(self, *args, **kwargs):
+        return self.inspector.stale_branches(*args, **kwargs)
 
 
 class DeleterTestCase(TestCase):
@@ -247,9 +280,11 @@ class CommandTestCase(GitSweepTestCase, InspectorTestCase, DeleterTestCase):
 
         patches = (
             patch.object(sys, 'stdout'),
-            patch.object(sys, 'stderr'))
-
-        with nested(*patches):
+            patch.object(sys, 'stderr')
+        )
+        
+        with ExitStack() as stack:
+            [stack.enter_context(cm) for cm in patches]
             stdout = sys.stdout
             stderr = sys.stderr
             try:
@@ -257,7 +292,8 @@ class CommandTestCase(GitSweepTestCase, InspectorTestCase, DeleterTestCase):
             except SystemExit as se:
                 pass
 
-        stdout = ''.join([i[0][0] for i in stdout.write.call_args_list])
-        stderr = ''.join([i[0][0] for i in stderr.write.call_args_list])
+            stdout = ''.join([i[0][0] for i in stdout.write.call_args_list])
+            stderr = ''.join([i[0][0] for i in stderr.write.call_args_list])
 
-        return (se.code, stdout, stderr)
+            return (None, stdout, stderr)
+            

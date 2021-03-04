@@ -1,9 +1,11 @@
+from datetime import timedelta, datetime
 import sys
 from os import getcwd
 from argparse import ArgumentParser
 from textwrap import dedent
 
 from git import Repo, InvalidGitRepositoryError
+from git.refs.remote import RemoteReference
 
 from gitsweep.inspector import Inspector
 from gitsweep.deleter import Deleter
@@ -38,6 +40,12 @@ class CommandLine(object):
         'dest': 'skips',
         'default': ''}
 
+    _delete_stale_after_days_kwargs = {
+        'help': 'Delete stale branches after how many days?',
+        'dest': 'delete_stale_after_days',
+        'type': int,
+        'default': None}
+
     _no_fetch_kwargs = {
         'help': 'Do not fetch from the remote',
         'dest': 'fetch',
@@ -56,6 +64,7 @@ class CommandLine(object):
     _preview.add_argument('--master', **_master_kwargs)
     _preview.add_argument('--nofetch', **_no_fetch_kwargs)
     _preview.add_argument('--skip', **_skip_kwargs)
+    _preview.add_argument('--delete_stale_after_days', **_delete_stale_after_days_kwargs)
     _preview.set_defaults(action='preview')
 
     _cleanup_usage = dedent('''
@@ -72,6 +81,7 @@ class CommandLine(object):
     _cleanup.add_argument('--master', **_master_kwargs)
     _cleanup.add_argument('--nofetch', **_no_fetch_kwargs)
     _cleanup.add_argument('--skip', **_skip_kwargs)
+    _cleanup.add_argument('--delete_stale_after_days', **_delete_stale_after_days_kwargs)
     _cleanup.set_defaults(action='cleanup')
 
     def __init__(self, args):
@@ -105,7 +115,7 @@ class CommandLine(object):
         dry_run = True if args.action == 'preview' else False
         fetch = args.fetch
         skips = [i.strip() for i in args.skips.split(',')]
-
+        delete_stale_after_days = args.delete_stale_after_days
         # Is this a Git repository?
         repo = Repo(getcwd())
 
@@ -124,6 +134,16 @@ class CommandLine(object):
         inspector = Inspector(repo, remote_name=remote_name,
             master_branch=master_branch)
         ok_to_delete = inspector.merged_refs(skip=skips)
+        stale_branches = []
+        if delete_stale_after_days:
+            delete_before = datetime.utcnow() - timedelta(
+                days=int(delete_stale_after_days)
+            )
+            stale_branches = inspector.stale_branches(
+                delete_before,
+                skip=skips,
+            )
+
 
         if ok_to_delete:
             sys.stdout.write(
@@ -133,8 +153,14 @@ class CommandLine(object):
             sys.stdout.write('No remote branches are available for '
                 'cleaning up\n')
 
-        for ref in ok_to_delete:
-            sys.stdout.write('  {0}\n'.format(ref.remote_head))
+        for ref in ok_to_delete + stale_branches:
+            if isinstance(ref, RemoteReference):
+                sys.stdout.write('  {0}\n'.format(ref.remote_head))
+            else:
+                _ref, date_last_updated, _ = ref
+                sys.stdout.write('  {0} is stale ({1})\n'.format(
+                    _ref.remote_head, date_last_updated.strftime("%Y-%m-%d")
+                    ))
 
         if not dry_run:
             deleter = Deleter(repo, remote_name=remote_name,
@@ -145,7 +171,7 @@ class CommandLine(object):
                 answer = raw_input()
             if args.force or answer.lower().startswith('y'):
                 sys.stdout.write('\n')
-                for ref in ok_to_delete:
+                for ref in ok_to_delete + [stale[0] for stale in stale_branches]:
                     sys.stdout.write('  deleting {0}'.format(ref.remote_head))
                     deleter.remove_remote_refs([ref])
                     sys.stdout.write(' (done)\n')
