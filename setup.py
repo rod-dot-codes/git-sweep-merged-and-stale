@@ -9,6 +9,9 @@ version = '0.5'
 
 install_requires = [
     'GitPython>=0.3.2RC1',
+]
+
+test_requirements = [
     'freezegun',
     'pytest',
     'mock'
@@ -44,6 +47,7 @@ setup(name='git-sweep-merged-and-stale',
     include_package_data=True,
     zip_safe=False,
     install_requires=install_requires,
+    tests_require=test_requirements,
     entry_points={
         'console_scripts':
             ['git-sweep-merged-and-stale=gitsweep.entrypoints:main']
