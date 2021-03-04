@@ -1,0 +1,5 @@
+freezegun
+pytest
+mock
+pytest-cov
+black

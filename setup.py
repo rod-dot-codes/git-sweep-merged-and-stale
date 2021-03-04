@@ -11,16 +11,6 @@ install_requires = [
     'GitPython>=0.3.2RC1',
 ]
 
-test_requirements = [
-    'freezegun',
-    'pytest',
-    'mock'
-]
-
-# Add argparse if less than Python 2.7
-if sys.version_info[0] <= 2 and sys.version_info[1] < 7:
-    install_requires.append('argparse>=1.2.1')
-
 setup(name='git-sweep-merged-and-stale',
     version=version,
     description="Clean up branches from your Git remotes",
@@ -47,7 +37,6 @@ setup(name='git-sweep-merged-and-stale',
     include_package_data=True,
     zip_safe=False,
     install_requires=install_requires,
-    tests_require=test_requirements,
     entry_points={
         'console_scripts':
             ['git-sweep-merged-and-stale=gitsweep.entrypoints:main']

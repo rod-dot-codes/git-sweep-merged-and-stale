@@ -179,7 +179,7 @@ class CommandLine(object):
         for ref in ok_to_delete + stale_branches:
             if isinstance(ref, RemoteReference):
                 sys.stdout.write("  {0}\n".format(ref.remote_head))
-            else:
+            elif ref[0] not in ok_to_delete:
                 _ref, date_last_updated, _ = ref
                 sys.stdout.write(
                     "  {0} is stale ({1})\n".format(
