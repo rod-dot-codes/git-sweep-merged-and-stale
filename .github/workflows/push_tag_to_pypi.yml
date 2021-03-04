@@ -1,0 +1,38 @@
+name: Push tag to PyPi
+on: 
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Tag to Push'
+        default: 'latest'
+        required: true
+
+jobs:
+  force_upload_tag:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest]
+        python-version: ['3.9']
+    steps:
+    - name: git
+      run: sudo apt-get install git
+    - uses: actions/checkout@v2
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: ${{ matrix.python-version }}
+    - name: Display Python version
+      run: python -c "import sys; print(sys.version)"
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install --user .
+        pip install twine wheel
+    - uses: casperdcl/deploy-pypi@v2
+      env:
+        FORCED_TAG: ${{ github.event.inputs.tag }}
+      with:
+        build: true
+        pip: true
+        password: ${{ secrets.SECRET_PYPI_RODCODES_API_TOKEN }}

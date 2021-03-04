@@ -13,7 +13,6 @@ tag = "{tag}"
 forced_tag = f"{os.environ.get('FORCED_TAG', '')}"
 
 setup(name='git-sweep-merged-and-stale',
-    version_config=True,
     description="Clean up branches from your Git remotes",
     long_description=README,
     classifiers=[
