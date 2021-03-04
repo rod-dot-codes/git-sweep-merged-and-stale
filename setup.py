@@ -5,14 +5,12 @@ from setuptools import setup, find_packages
 here = os.path.abspath(os.path.dirname(__file__))
 README = open(os.path.join(here, 'README.rst')).read()
 
-version = '0.5'
-
 install_requires = [
-    'GitPython>=0.3.2RC1',
+    'GitPython>=3.1',
 ]
 
 setup(name='git-sweep-merged-and-stale',
-    version=version,
+    version_config=True,
     description="Clean up branches from your Git remotes",
     long_description=README,
     classifiers=[
@@ -32,11 +30,12 @@ setup(name='git-sweep-merged-and-stale',
     author_email='rodneyhawkins@gmail.com',
     url='http://rod.codes',
     license='MIT',
-    packages=find_packages('src'),
+    packages=find_packages("src", exclude=["gitsweep.tests"]),
     package_dir = {'': 'src'},
     include_package_data=True,
     zip_safe=False,
     install_requires=install_requires,
+    setup_requires=['setuptools-git-versioning'],
     entry_points={
         'console_scripts':
             ['git-sweep-merged-and-stale=gitsweep.entrypoints:main']

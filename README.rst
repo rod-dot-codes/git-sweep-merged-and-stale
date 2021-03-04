@@ -1,17 +1,41 @@
 git-sweep-merged-and-stale
-=========
+===========================
 
-This is based on the excellent ``git-sweep``.
+This is based on the excellent `git-sweep`_ .
 
 I just added ``delete_stale_after_days`` which allows you to specify ``delete_stale_after_days`` stale branches we need to delete.
 
-ie: ``git-sweep cleanup --delete_stale_after_days 15`` will delete all Branches older than 15 days and those merged in Master.
+ie: ``git-sweep-merged-and-stale cleanup --delete_stale_after_days 15`` will delete all Branches older than 15 days and those merged in Master.
 
 WARNING: When you delete branches with no active PR, you will lose access to the ability to restore the branch. Please back it up using Github Artifacts or
 a copy of the branch prior to running this.
 
+This deletes branches that fulfil either of these:
+  - Merged into Master or the branch you specify by ``which_master_main`` OR
+  - Branches older than X days (specified by ``delete_stale_after_days``)
+
+This by default does not work until you set parameter action = `cleanup`
+
+To install it run:
+
+::
+
+    pip install git-sweep-merged-and-stale || easy_install git-sweep-merged-and-stale
+
+Then to run it in ``preview`` mode:
+
+::
+
+   git-sweep-merged-and-stale preview --delete_stale_after_days 30
+
+Then to run it in ``cleanup`` mode:
+
+::
+
+   git-sweep-merged-and-stale cleanup --delete_stale_after_days 30
+
 Introduction
------------
+------------
 
 A command-line tool that helps you clean up Git branches that have been merged
 into master.
@@ -34,19 +58,19 @@ now?
 The answer
 ----------
 
-Using ``git-sweep`` you can **safely remove remote branches that have been
+Using ``git-sweep-merged-and-stale`` you can **safely remove remote branches that have been
 merged into master**.
 
 To install it run:
 
 ::
 
-    pip install git-sweep || easy_install git-sweep
+    pip install git-sweep-merged-and-stale || easy_install git-sweep-merged-and-stale
 
 Try it for yourself (safely)
 ----------------------------
 
-To see a list of branches that git-sweep detects are merged into your master branch:
+To see a list of branches that git-sweep-merged-and-stale detects are merged into your master branch:
 
 You need to have your Git repository as your current working directory.
 
@@ -58,7 +82,7 @@ The ``preview`` command doesn't make any changes to your repo.
 
 ::
 
-    $ git-sweep preview
+    $ git-sweep-merged-and-stale preview
     Fetching from the remote
     These branches have been merged into master:
 
@@ -68,14 +92,14 @@ The ``preview`` command doesn't make any changes to your repo.
       branch4
       branch5
 
-    To delete them, run again with `git-sweep cleanup`
+    To delete them, run again with `git-sweep-merged-and-stale cleanup`
 
 If you are happy with the list, you can run the command that deletes these
 branches from the remote, ``cleanup``:
 
 ::
 
-    $ git-sweep cleanup
+    $ git-sweep-merged-and-stale cleanup
     Fetching from the remote
     These branches have been merged into master:
 
@@ -103,25 +127,25 @@ You can also give it a different name for your remote and master branches.
 
 ::
 
-    $ git-sweep preview --master=develop --origin=github
+    $ git-sweep-merged-and-stale preview --master=develop --origin=github
     ...
 
 Tell it to skip the ``git fetch`` that it does by default.
 
 ::
 
-    $ git-sweep preview --nofetch
+    $ git-sweep-merged-and-stale preview --nofetch
     These branches have been merged into master:
 
       branch1
 
-    To delete them, run again with `git-sweep cleanup --nofetch`
+    To delete them, run again with `git-sweep-merged-and-stale cleanup --nofetch`
 
 Make it skip certain branches.
 
 ::
 
-    $ git-sweep preview --skip=develop
+    $ git-sweep-merged-and-stale preview --skip=develop
     Fetching from the remote
     These branches have been merged into master:
 
@@ -129,9 +153,9 @@ Make it skip certain branches.
       upgrade-libs
       derp-removal
 
-    To delete them, run again with `git-sweep cleanup --skip=develop`
+    To delete them, run again with `git-sweep-merged-and-stale cleanup --skip=develop`
 
-Once git-sweep finds the branches, you'll be asked to confirm that you wish to
+Once git-sweep-merged-and-stale finds the branches, you'll be asked to confirm that you wish to
 delete them.
 
 ::
@@ -143,7 +167,7 @@ immediately.
 
 ::
 
-    $ git-sweep cleanup --skip=develop --force
+    $ git-sweep-merged-and-stale cleanup --skip=develop --force
     Fetching from the remote
     These branches have been merged into master:
 
@@ -162,7 +186,7 @@ immediately.
     
     
 Deleting local branches
------------
+-----------------------
 
 You can also clean up local branches by using simple hack:
 
@@ -170,7 +194,7 @@ You can also clean up local branches by using simple hack:
 
     $ cd myrepo
     $ git remote add local $(pwd)
-    $ git-sweep cleanup --origin=local
+    $ git-sweep-merged-and-stale cleanup --origin=local
     
 
 Development
@@ -181,10 +205,14 @@ I just use ``pytest`` to test this.
 Requirements
 ------------
 
-* Git >= 1.7
-* Python >= 2.6
+* Git
+* Python >= 3.6
 
 License
 -------
 
 Friendly neighborhood MIT license.
+
+.. _GitHub Flow: http://scottchacon.com/2011/08/31/github-flow.html
+.. _git-flow: http://nvie.com/posts/a-successful-git-branching-model/
+.. _git-sweep: https://github.com/arc90/git-sweep
