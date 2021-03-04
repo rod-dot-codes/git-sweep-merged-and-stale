@@ -47,11 +47,11 @@ jobs:
     steps:
       - name: Tell me about what's going on
         env:
-          OWNER: ${{ github.owner }}
+          SENDER: ${{ github.sender }}
           REF: ${{ github.ref }}
-        run: echo $OWNER && echo $REF
+        run: echo $SENDER && echo $REF
   build_latest_tag:
-    if: contains(github.ref, 'master') && github.owner == 'rodvdka'
+    if: github.ref == 'refs/heads/master' && github.sender == 'rodvdka'
     needs: [run_data]
     runs-on: ubuntu-latest
     steps:
