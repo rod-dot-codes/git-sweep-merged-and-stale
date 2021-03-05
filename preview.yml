@@ -33,7 +33,7 @@ jobs:
     - name: Backup Repo to Artifact for 30 days
       uses: actions/upload-artifact@v2
       with:
-        name: repo-zip-${{ github.repository }}-${{ steps.date.outputs.date }}
+        name: repo-zip-${{ steps.date.outputs.date }}
         path: backup.tar.gz
         retention-days: 30
 
