@@ -27,7 +27,7 @@ jobs:
       id: date
       run: echo "::set-output name=date::$(date +'%Y-%m-%d%H%M')"
     - name: Backup git
-      run: git archive -o backup.zip HEAD
+      run: git archive -o backup.zip master
     - name: Backup Repo to Artifact for 30 days
       uses: actions/upload-artifact@v2
       with:
