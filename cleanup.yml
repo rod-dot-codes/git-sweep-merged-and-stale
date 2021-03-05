@@ -22,7 +22,7 @@ jobs:
     - uses: actions/checkout@v2
       with:
         fetch-depth: 0
-      run: git checkout HEAD^
+    - run: git checkout HEAD^
     # This is where the backup happens
     # vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
 
