@@ -1,5 +1,5 @@
 name: Git Sweep Merged and Stale
-author: Rodney Hawkins (rod.codes)
+author: rodvdka
 description: Py 3.6+. Deletes old branches older than X days and merged branches. Based on `git-sweep`.
 inputs:
   warning:
