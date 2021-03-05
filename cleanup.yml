@@ -41,4 +41,5 @@ jobs:
     - name: Git Sweep Merged and Stale
       uses: rodvdka/git-sweep-merged-and-stale@latest
       with:
+        action: cleanup
         delete_stale_after_days: 180

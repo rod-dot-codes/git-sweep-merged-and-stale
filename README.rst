@@ -2,12 +2,13 @@ Git Sweep Merged and Stale Github Action
 ========================================
 Delete merged and stale branches from a Github repository.
 
-See example `Preview`_ step.
+See example `Preview`_ and `Cleanup`_ step.
 
 You need to use Python 3.6+ and declare it before
 
 ::
-    - uses: actions/setup-python@v2
+
+    uses: actions/setup-python@v2
     with:
         python-version: '3.x'
         architecture: 'x64'
@@ -39,6 +40,7 @@ Based off `git-sweep`_ .
 MIT License.
 
 .. _Preview: https://github.com/rodvdka/git-sweep-merged-and-stale/blob/master/preview.yml
+.. Cleanup: https://github.com/rodvdka/git-sweep-merged-and-stale/blob/master/cleanup.yml
 .. _PyPi: https://pypi.org/project/git-sweep-merged-and-stale/
 .. _Readme: https://github.com/rodvdka/git-sweep-merged-and-stale/blob/master/PACKAGE_README.rst
 .. _git-sweep: https://github.com/arc90/git-sweep
