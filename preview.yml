@@ -1,0 +1,23 @@
+name: Test Auto Delete
+
+on:
+ 
+  push:
+    branches: [ test-auto-delete ]
+  pull_request:
+    branches: [ test-auto-delete ]
+
+  workflow_dispatch:
+
+jobs:
+
+  build:
+    runs-on: "ubuntu-latest"
+    steps:
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: "3.9"
+    - uses: actions/checkout@v2
+    - name: Git Sweep Merged and Stale
+      uses: rodvdka/git-sweep-merged-and-stale@latest

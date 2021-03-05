@@ -1,7 +1,11 @@
 name: Git Sweep Merged and Stale
 author: Rodney Hawkins (rod.codes)
-description: Requires Python 3.6+ installed before. Deletes old branches older than X days and merged branches. Based on `git-sweep`.
+description: Py 3.6+. Deletes old branches older than X days and merged branches. Based on `git-sweep`.
 inputs:
+  warning:
+    description: 'You require Python 3.6+ to run this. See example https://github.com/rodvdka/git-sweep-merged-and-stale/blob/master/preview.yml'
+    required: true
+    default: ''
   delete_stale_after_days:
     description: 'After how many days should a branch be stale `X`?'
     required: true
