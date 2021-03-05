@@ -21,7 +21,7 @@ inputs:
 runs:
   using: composite
   steps:
-    - id: which version
+    - id: which-version
       run: python -c "import sys; print(sys.version)"
       shell: bash
     - id: ensure-python36-and-above
