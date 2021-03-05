@@ -24,23 +24,6 @@ jobs:
         python-version: ${{ matrix.python-version }}
     - name: Display Python version
       run: python -c "import sys; print(sys.version)"
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install --user -e .
-        if [ -f requirements.txt ]; then pip install --user -r requirements.txt; fi
-    - name: Delete .git because the test needs it to be raw
-      run: rm -rf .git
-    - name: Set git global settings
-      run: |
-        git config --global user.email "test@rod.codes"
-        git config --global user.name "Testy McTesty"
-    - name: Build coverage file
-      run: PATH="$PATH:/home/runner/.local/bin" pytest -vvv --cache-clear --cov=src/gitsweep/ --cov-config=.coveragerc src/gitsweep/tests
-    - name: Build coverage file with coverage file export
-      run: PATH="$PATH:/home/runner/.local/bin" pytest -vvv --cache-clear --cov=src/gitsweep/ --cov-config=.coveragerc src/gitsweep/tests > pytest-coverage.txt
-    - name: Comment coverage
-      uses: coroo/pytest-coverage-commentator@v1.0.2
   run_data:
     needs: [pytest_coverage_tool]
     runs-on: ubuntu-latest

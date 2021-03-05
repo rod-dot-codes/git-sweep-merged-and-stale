@@ -2,6 +2,15 @@ Git Sweep Merged and Stale Github Action
 ========================================
 Delete merged and stale branches from a Github repository.
 
+You need to use Python 3.6+ and declare it before
+
+::
+    - uses: actions/setup-python@v2
+    with:
+        python-version: '3.x'
+        architecture: 'x64'
+
+
 This deletes branches that fulfil either of these:
   - Merged into Master or Main (specified by ``which_master_main``) OR
   - Branches older than X days (specified by ``delete_stale_after_days``)
