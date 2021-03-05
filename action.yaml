@@ -21,11 +21,8 @@ inputs:
 runs:
   using: composite
   steps:
-    - id: which-version
-      run: python -c "import sys; print(sys.version)"
-      shell: bash
-    - id: ensure-python36-and-above
-      run: ${{ github.action_path }}/bin/ensure_python
+    - id: python-36-above
+      run: python -c "import sys; print(sys.version); assert sys.version_info >= (3, 6), 'Use Python 3.6 or newer'"
       shell: bash
     - id: install-run-git-sweep-merged-and-stale
       run:
