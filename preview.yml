@@ -18,8 +18,10 @@ jobs:
       uses: actions/setup-python@v2
       with:
         python-version: "3.9"
+    # You have to checkout master to back up the entire repo
     - uses: actions/checkout@v2
-
+      with:
+        ref: master
     # This is where the backup happens
     # vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
 
