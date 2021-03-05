@@ -29,12 +29,12 @@ jobs:
       id: date
       run: echo "::set-output name=date::$(date +'%Y-%m-%d%H%M')"
     - name: Backup git
-      run: git archive --format zip --output backup.zip master
+      run: tar cvf - * | gzip -9 - > backup.tar.gz
     - name: Backup Repo to Artifact for 30 days
       uses: actions/upload-artifact@v2
       with:
-        name: repo-zip-${{ github.repository.name }}-${{ steps.date.outputs.date }}
-        path: backup.zip
+        name: repo-zip-${{ github.repository }}-${{ steps.date.outputs.date }}
+        path: backup.tar.gz
         retention-days: 30
 
     # This is where the backup happens
